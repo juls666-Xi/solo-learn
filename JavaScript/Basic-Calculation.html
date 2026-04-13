@@ -18,3 +18,83 @@
             background-color: #f2f2f2;
         }
     </style>
+    <body>
+        <table>
+            <tr>
+                <th>GRADE</th>
+                <th>REMARKS</th>
+            </tr>
+            <tr>
+                <td>90-100</td>
+                <td>A+</td>
+            </tr>
+            <tr>
+                <td>80-89</td>
+                <td>A</td>
+            </tr>
+            <tr>
+                <td>70-79</td>
+                <td>B</td>
+            </tr>
+            <tr>
+                <td>60-69</td>
+                <td>C</td>
+            </tr>
+            <tr>
+                <td>50-59</td>
+                <td>D</td>
+            </tr>
+            <tr>
+                <td>0-49</td>
+                <td>F</td>
+            </tr>
+        </table>
+
+<table>
+  <thead>
+    <tr>
+      <th>Student</th>
+      <th>Midterm</th>
+      <th>Finals</th>
+      <th>Average</th>
+      <th>Remarks</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Student A</td>
+      <!-- oninput triggers the calculation every time a key is pressed -->
+      <td><input type="number" id="m1" value="0" oninput="calculate()"></td>
+      <td><input type="number" id="f1" value="0" oninput="calculate()"></td>
+      <td id="avg1">0.00</td>
+      <td id="rem1">-</td>
+    </tr>
+  </tbody>
+</table>
+
+    <script>
+        function calculate() {
+  // 1. Get values from inputs
+  let midterm = parseFloat(document.getElementById('m1').value) || 0;
+  let finals = parseFloat(document.getElementById('f1').value) || 0;
+  
+  // 2. Compute average
+  let average = (midterm + finals) / 2;
+  
+  // 3. Update the Average cell
+  let avgCell = document.getElementById('avg1');
+  avgCell.innerText = average.toFixed(2);
+  
+  // 4. Update Remarks based on the average
+  let remarkCell = document.getElementById('rem1');
+  if (average >= 75) {
+    remarkCell.innerText = "PASSED";
+    remarkCell.className = "pass";
+  } else {
+    remarkCell.innerText = "FAILED";
+    remarkCell.className = "fail";
+  }
+}
+    </script>
+    </body>
+</html>
