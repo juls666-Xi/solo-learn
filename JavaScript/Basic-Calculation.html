@@ -1,100 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Grading system basic cal table</title>
-    <style>
-        table {
-            border-collapse: collapse;
-            width: 50%;
-            margin: 20px auto;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-    </style>
-    <body>
-        <table>
-            <tr>
-                <th>GRADE</th>
-                <th>REMARKS</th>
-            </tr>
-            <tr>
-                <td>90-100</td>
-                <td>A+</td>
-            </tr>
-            <tr>
-                <td>80-89</td>
-                <td>A</td>
-            </tr>
-            <tr>
-                <td>70-79</td>
-                <td>B</td>
-            </tr>
-            <tr>
-                <td>60-69</td>
-                <td>C</td>
-            </tr>
-            <tr>
-                <td>50-59</td>
-                <td>D</td>
-            </tr>
-            <tr>
-                <td>0-49</td>
-                <td>F</td>
-            </tr>
-        </table>
+<head>
+<style>
+  table { border-collapse: collapse; width: 80%; font-family: sans-serif; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 12px; text-align: center; }
+  th { background-color: #f8f9fa; }
+  input { width: 60px; padding: 5px; text-align: center; }
+  .grade-f { color: #d93025; font-weight: bold; } /* Red for Fail */
+  .grade-pass { color: #188038; font-weight: bold; } /* Green for A+ */
+</style>
+</head>
+<body>
+
+<h2>Automatic Grade Calculator</h2>
 
 <table>
   <thead>
     <tr>
-      <th>Student</th>
-      <th>Midterm</th>
-      <th>Finals</th>
+      <th>Student Name</th>
+      <th>Score 1</th>
+      <th>Score 2</th>
       <th>Average</th>
-      <th>Remarks</th>
+      <th>Letter Grade</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="gradeTable">
     <tr>
-      <td>Student A</td>
-      <!-- oninput triggers the calculation every time a key is pressed -->
-      <td><input type="number" id="m1" value="0" oninput="calculate()"></td>
-      <td><input type="number" id="f1" value="0" oninput="calculate()"></td>
-      <td id="avg1">0.00</td>
-      <td id="rem1">-</td>
+      <td><input type="text" placeholder="Enter name" style="width: 120px;"></td>
+      <td><input type="number" class="score1" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+      <td><input type="number" class="score2" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+      <td class="avg-cell">0.00</td>
+      <td class="remark-cell">-</td>
     </tr>
   </tbody>
 </table>
 
-    <script>
-        function calculate() {
-  // 1. Get values from inputs
-  let midterm = parseFloat(document.getElementById('m1').value) || 0;
-  let finals = parseFloat(document.getElementById('f1').value) || 0;
+<script>
+function updateRow(input) {
+  // Find the row containing the changed input
+  let row = input.closest('tr');
+  let s1 = parseFloat(row.querySelector('.score1').value) || 0;
+  let s2 = parseFloat(row.querySelector('.score2').value) || 0;
   
-  // 2. Compute average
-  let average = (midterm + finals) / 2;
+  // Calculate average
+  let average = (s1 + s2) / 2;
+  row.querySelector('.avg-cell').innerText = average.toFixed(2);
   
-  // 3. Update the Average cell
-  let avgCell = document.getElementById('avg1');
-  avgCell.innerText = average.toFixed(2);
-  
-  // 4. Update Remarks based on the average
-  let remarkCell = document.getElementById('rem1');
-  if (average >= 75) {
-    remarkCell.innerText = "PASSED";
-    remarkCell.className = "pass";
-  } else {
-    remarkCell.innerText = "FAILED";
-    remarkCell.className = "fail";
-  }
+  // Determine Grade based on your scale
+  let remarkCell = row.querySelector('.remark-cell');
+  let grade = "";
+  let className = "";
+
+  if (average >= 90) { grade = "A+"; className = "grade-pass"; }
+  else if (average >= 80) { grade = "A"; }
+  else if (average >= 70) { grade = "B"; }
+  else if (average >= 60) { grade = "C"; }
+  else if (average >= 50) { grade = "D"; }
+  else { grade = "F"; className = "grade-f"; }
+
+  remarkCell.innerText = grade;
+  remarkCell.className = "remark-cell " + className;
 }
-    </script>
-    </body>
+</script>
+
+</body>
 </html>
