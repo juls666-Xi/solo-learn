@@ -2,12 +2,18 @@
 <html lang="en">
 <head>
 <style>
-  table { border-collapse: collapse; width: 80%; font-family: sans-serif; margin-top: 20px; }
-  th, td { border: 1px solid #ccc; padding: 12px; text-align: center; }
+  table { border-collapse: collapse; width: 95%; font-family: sans-serif; margin-top: 20px; }
+  th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
   th { background-color: #f8f9fa; }
   input { width: 60px; padding: 5px; text-align: center; }
-  .grade-f { color: #d93025; font-weight: bold; } /* Red for Fail */
-  .grade-pass { color: #188038; font-weight: bold; } /* Green for A+ */
+  .name-input { width: 150px; text-align: left; }
+  .grade-f { color: #d93025; font-weight: bold; }
+  .grade-pass { color: #188038; font-weight: bold; }
+  .btn-container { margin-top: 15px; display: flex; gap: 10px; }
+  button { padding: 8px 15px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; }
+  .btn-add { background: #007bff; color: white; }
+  .btn-download { background: #28a745; color: white; }
+  button:hover { opacity: 0.8; }
 </style>
 </head>
 <body>
@@ -18,48 +24,93 @@
   <thead>
     <tr>
       <th>Student Name</th>
-      <th>Score 1</th>
-      <th>Score 2</th>
+      <th>Prelim</th>
+      <th>Midterm</th>
+      <th>Semi-Finals</th>
+      <th>Finals</th>
       <th>Average</th>
       <th>Letter Grade</th>
     </tr>
   </thead>
   <tbody id="gradeTable">
     <tr>
-      <td><input type="text" placeholder="Enter name" style="width: 120px;"></td>
+      <td><input type="text" class="name-input" placeholder="Enter name"></td>
       <td><input type="number" class="score1" value="0" min="0" max="100" oninput="updateRow(this)"></td>
       <td><input type="number" class="score2" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+      <td><input type="number" class="score3" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+      <td><input type="number" class="score4" value="0" min="0" max="100" oninput="updateRow(this)"></td>
       <td class="avg-cell">0.00</td>
       <td class="remark-cell">-</td>
     </tr>
   </tbody>
 </table>
 
+<div class="btn-container">
+  <button class="btn-add" onclick="addRow()">+ Add Student</button>
+  <button class="btn-download" onclick="downloadCSV()"> Download as CSV</button>
+</div>
+
 <script>
 function updateRow(input) {
-  // Find the row containing the changed input
   let row = input.closest('tr');
-  let s1 = parseFloat(row.querySelector('.score1').value) || 0;
-  let s2 = parseFloat(row.querySelector('.score2').value) || 0;
+  let scores = [
+    parseFloat(row.querySelector('.score1').value) || 0,
+    parseFloat(row.querySelector('.score2').value) || 0,
+    parseFloat(row.querySelector('.score3').value) || 0,
+    parseFloat(row.querySelector('.score4').value) || 0
+  ];
   
-  // Calculate average
-  let average = (s1 + s2) / 2;
+  let average = scores.reduce((a, b) => a + b) / 4;
   row.querySelector('.avg-cell').innerText = average.toFixed(2);
   
-  // Determine Grade based on your scale
   let remarkCell = row.querySelector('.remark-cell');
-  let grade = "";
-  let className = "";
+  let grade = "F", className = "grade-f";
 
   if (average >= 90) { grade = "A+"; className = "grade-pass"; }
-  else if (average >= 80) { grade = "A"; }
-  else if (average >= 70) { grade = "B"; }
-  else if (average >= 60) { grade = "C"; }
-  else if (average >= 50) { grade = "D"; }
-  else { grade = "F"; className = "grade-f"; }
+  else if (average >= 80) { grade = "A"; className = ""; }
+  else if (average >= 70) { grade = "B"; className = ""; }
+  else if (average >= 60) { grade = "C"; className = ""; }
+  else if (average >= 50) { grade = "D"; className = ""; }
 
   remarkCell.innerText = grade;
   remarkCell.className = "remark-cell " + className;
+}
+
+function addRow() {
+  let tableBody = document.getElementById('gradeTable');
+  let newRow = document.createElement('tr');
+  newRow.innerHTML = `
+    <td><input type="text" class="name-input" placeholder="Enter name"></td>
+    <td><input type="number" class="score1" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+    <td><input type="number" class="score2" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+    <td><input type="number" class="score3" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+    <td><input type="number" class="score4" value="0" min="0" max="100" oninput="updateRow(this)"></td>
+    <td class="avg-cell">0.00</td>
+    <td class="remark-cell">-</td>
+  `;
+  tableBody.appendChild(newRow);
+}
+
+function downloadCSV() {
+  let csv = [];
+  let rows = document.querySelectorAll("table tr");
+  
+  for (let i = 0; i < rows.length; i++) {
+    let row = [], cols = rows[i].querySelectorAll("td, th");
+    for (let j = 0; j < cols.length; j++) {
+      let input = cols[j].querySelector("input");
+      let data = input ? input.value : cols[j].innerText;
+      row.push('"' + data.replace(/"/g, '""') + '"'); 
+    }
+    csv.push(row.join(","));
+  }
+
+  // Generate the actual file download
+  let csvBlob = new Blob([csv.join("\n")], { type: "text/csv" });
+  let link = document.createElement("a");
+  link.href = URL.createObjectURL(csvBlob);
+  link.download = "student_grades.csv";
+  link.click();
 }
 </script>
 
