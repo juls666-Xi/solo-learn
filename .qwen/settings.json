@@ -5,7 +5,9 @@
       "Bash(git commit *)",
       "Bash(git push *)",
       "Bash(git *)",
-      "Bash(mv *)"
+      "Bash(mv *)",
+      "WebFetch(juls666-xi.github.io)",
+      "Bash(gh *)"
     ]
   },
   "$version": 3
